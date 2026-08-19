@@ -9,7 +9,7 @@ import torch
 from sklearn.metrics import roc_auc_score
 
 from iqccd.core import IQCCD
-from iqccd.data import make_loader, read_manifest
+from iqccd.data import deterministic_subset, make_loader, read_manifest
 from iqccd.gate import ImageGate
 from iqccd.intervention import image_predictions, train_epoch
 from iqccd.model import ChangeQuery
@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train IQC-CD with image labels.")
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/example.json")
+    parser.add_argument("--config", type=Path, default=ROOT / "configs/whu.json")
     parser.add_argument("--device", default="auto")
     return parser.parse_args()
 
@@ -63,16 +63,19 @@ def main() -> None:
     data = config["data"]
     training = config["training"]
     data_root = project_path(ROOT, data["root"])
-    if data_root is None:
-        raise ValueError("data.root is required")
+    split_root = project_path(ROOT, data["split_root"])
+    if data_root is None or split_root is None:
+        raise ValueError("data.root and data.split_root are required")
     train_records = read_manifest(
-        data_root, data_root / str(data["train_manifest"])
+        data_root, split_root / str(data["train_manifest"])
     )
     val_records = read_manifest(
-        data_root, data_root / str(data["validation_manifest"])
+        data_root, split_root / str(data["validation_manifest"])
     )
-    calibration_records = read_manifest(
-        data_root, data_root / str(data["calibration_manifest"])
+    calibration_records = deterministic_subset(
+        read_manifest(data_root, split_root / str(data["calibration_manifest"])),
+        int(data["calibration_samples"]),
+        seed + 11,
     )
     loader_options = {
         "image_size": int(data["image_size"]),

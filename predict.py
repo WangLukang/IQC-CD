@@ -23,8 +23,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run IQC-CD on one image pair.")
     parser.add_argument("t1", type=Path)
     parser.add_argument("t2", type=Path)
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/example.json")
-    parser.add_argument("--checkpoint-dir", type=Path, default=ROOT / "runs/iqccd")
+    parser.add_argument("--config", type=Path, default=ROOT / "configs/whu.json")
+    parser.add_argument("--checkpoint-dir", type=Path)
     parser.add_argument("--output", type=Path, default=ROOT / "outputs/prediction")
     parser.add_argument("--device", default="auto")
     return parser.parse_args()
@@ -40,6 +40,9 @@ def main() -> None:
     config = load_config(args.config.resolve())
     model_config = config["model"]
     device = resolve_device(args.device)
+    checkpoint_dir = args.checkpoint_dir or project_path(ROOT, config["output"])
+    if checkpoint_dir is None:
+        raise ValueError("checkpoint directory is required")
     query = ChangeQuery(
         model_name=str(model_config["dinov3_name"]),
         weights=project_path(ROOT, model_config.get("dinov3_weights")),
@@ -48,7 +51,7 @@ def main() -> None:
         top_fraction=float(model_config["top_fraction"]),
     )
     checkpoint = torch.load(
-        args.checkpoint_dir / "query_head.pt",
+        checkpoint_dir / "query_head.pt",
         map_location="cpu",
         weights_only=False,
     )
@@ -58,7 +61,7 @@ def main() -> None:
         detection_floor=float(model_config["detection_floor"]),
     )
     model = IQCCD(query, prior).to(device).eval()
-    gate = ImageGate.load(args.checkpoint_dir / "image_gate.json")
+    gate = ImageGate.load(checkpoint_dir / "image_gate.json")
 
     size = int(config["data"]["image_size"])
     first = image_tensor(args.t1, size).unsqueeze(0).to(device)
