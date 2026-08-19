@@ -11,10 +11,13 @@
     "pixel_threshold": 0.5
   },
   "data": {
-    "root": "data/my_dataset",
-    "train_manifest": "manifests/train.csv",
-    "validation_manifest": "manifests/val.csv",
-    "calibration_manifest": "manifests/train.csv",
+    "root": "data/LEVIR-CD",
+    "split_root": "splits/LEVIR-CD",
+    "train_manifest": "train.csv",
+    "validation_manifest": "val.csv",
+    "calibration_manifest": "train.csv",
+    "calibration_samples": 1024,
+    "test_manifest": "test.csv",
     "image_size": 224
   },
   "training": {
@@ -25,5 +28,5 @@
     "learning_rate": 0.001,
     "weight_decay": 0.01
   },
-  "output": "runs/iqccd"
+  "output": "runs/levir"
 }

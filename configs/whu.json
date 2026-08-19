@@ -1,0 +1,32 @@
+{
+  "seed": 20260731,
+  "model": {
+    "dinov3_name": "convnext_tiny.dinov3_lvd1689m",
+    "dinov3_weights": null,
+    "satlas_weights": "weights/aerial_swinb_si.pth",
+    "out_indices": [0, 1, 2, 3],
+    "decoder_width": 24,
+    "top_fraction": 0.05,
+    "detection_floor": 0.2,
+    "pixel_threshold": 0.5
+  },
+  "data": {
+    "root": "data/WHU-CD",
+    "split_root": "splits/WHU-CD",
+    "train_manifest": "train.csv",
+    "validation_manifest": "val.csv",
+    "calibration_manifest": "train.csv",
+    "calibration_samples": 1024,
+    "test_manifest": "test.csv",
+    "image_size": 224
+  },
+  "training": {
+    "epochs": 12,
+    "patience": 4,
+    "batch_size": 16,
+    "num_workers": 0,
+    "learning_rate": 0.001,
+    "weight_decay": 0.01
+  },
+  "output": "runs/whu"
+}
