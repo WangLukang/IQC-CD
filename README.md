@@ -7,7 +7,7 @@ IQC-CD learns a lightweight multi-scale change query from image-level labels. Sp
 ## Method
 
 - Frozen DINOv3 ConvNeXt-Tiny encoder with four-scale dense features
-- 41,089-parameter time-symmetric change-query head
+- 41,119-parameter time-symmetric change-query head
 - Spatially known negative-feature intervention
 - Frozen SatlasPretrain aerial building-instance prior
 - Parameter-free harmonic semantic consensus
