@@ -52,6 +52,15 @@ IQC-CD/
 
 The image names must match the identifiers and relative paths in the included CSV files. Training reads only `id`, `t1`, `t2`, and `label`; masks are opened only by `evaluate.py` for final pixel-level metrics.
 
+Data preparation scripts are included under `splits/`. After placing the original datasets in `data/WHU-CD-raw/` and `data/LEVIR-CD-raw/`, reproduce the 224×224 tiles and CSV files with:
+
+```bash
+python splits/prepare_whu_dataset.py
+python splits/prepare_levir_dataset.py
+```
+
+The WHU-CD script expects `before/before.tif`, `after/after.tif`, and `change label/change_label.tif`. The LEVIR-CD script expects the official `{train,val,test}/{A,B,label}` layout. Use `--help` to override paths or preprocessing settings.
+
 ### Data splits
 
 | Dataset | Split | Total | Changed | Unchanged |
